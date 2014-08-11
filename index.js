@@ -9,27 +9,65 @@
 'use strict';
 
 var replace = require('frep');
-var delims = module.exports;
+var Delims = require('delims');
+var delims = new Delims();
 
 
-delims.escape = function(str) {
-  return replace.strWithArr(str, [
+/**
+ * ```js
+ * var delims = require('escape-delims');
+ * ```
+ *
+ * @method `delims`
+ * @param {Object} `options` Default options to use.
+ * @api public
+ */
+
+function delimiters (options) {
+  this.init(options);
+  return this;
+}
+
+
+/**
+ * Initialize defaults.
+ *
+ * @api private
+ */
+
+delimiters.init = function(opts) {
+	opts = opts || {};
+  opts.delims = opts.delims || ['{%%', '%}'];
+  this.delims = opts.delims;
+  this.regex = delims.templates(this.delims).evaluate;
+};
+
+
+delimiters.escape = function(str, options) {
+	this.init(options);
+	return replace.strWithArr(str, [
     {
-      pattern: /\{%%([^%]+)%}/g,
+      pattern: this.regex,
       replacement: '(;}%%{;)$1(;}%{;)'
     }
   ]);
 };
 
-delims.unescape = function(str) {
+
+delimiters.unescape = function(str, options) {
+	this.init(options);
+
   return replace.strWithArr(str, [
     {
       pattern: /\(;}%%{;\)/g,
-      replacement: '{%'
+      replacement: this.delims[0]
     },
     {
       pattern: /\(;}%{;\)/g,
-      replacement: '%}'
+      replacement: this.delims[1]
     }
   ]);
 };
+
+
+module.exports = delimiters;

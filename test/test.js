@@ -7,21 +7,28 @@
 
 'use strict';
 
-var expect = require('chai').expect;
-var delims = require('../');
+var should = require('should');
+var delims = require('..');
 
-describe('escapeDelims', function () {
-  describe('when delimiters are escaped', function () {
-    it('should not escape the delimiters', function () {
-      var actual = delims.escape('{%= foo %}');
-      expect(actual).to.eql('{%= foo %}');
-    });
+
+describe('escape delims', function () {
+  it('should not transform the delimiters', function () {
+    var actual = delims.escape('{%= foo %}');
+    actual.should.eql('{%= foo %}');
   });
 
-  describe('when delimiters are escaped', function () {
-    it('should escape the delimiters', function () {
-      var actual = delims.escape('{%%= foo %}');
-      expect(actual).to.eql('(;}%%{;)= foo (;}%{;)');
-    });
+  it('should transform the delimiters', function () {
+    var actual = delims.escape('{%%= foo %}');
+    actual.should.eql('(;}%%{;)= foo (;}%{;)');
+  });
+
+  it('should escape custom delimiters', function () {
+    var actual = delims.escape('<%%= foo %>', {delims: ['<%%', '%>']});
+    actual.should.eql('(;}%%{;)= foo (;}%{;)');
+  });
+
+  it('should un-escape escaped custom delimiters', function () {
+    var actual = delims.unescape('(;}%%{;)= foo (;}%{;)', {delims: ['<%%', '%>']});
+    actual.should.eql('<%%= foo %>');
   });
 });

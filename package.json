@@ -1,7 +1,7 @@
 {
   "name": "escape-delims",
   "description": "Escape delimiters in templates. Used with Lo-Dash and underscore templates but could be used with other template engines as well.",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "homepage": "https://github.com/jonschlinkert/escape-delims",
   "author": {
     "name": "Jon Schlinkert",
@@ -38,11 +38,14 @@
     "test": "mocha -R spec"
   },
   "devDependencies": {
-    "verb": "~0.2.6",
     "chai": "~1.9.1",
-    "mocha": "*"
+    "lodash": "^2.4.1",
+    "mocha": "*",
+    "should": "^4.0.4",
+    "verb": "~0.2.6"
   },
   "dependencies": {
+    "delims": "^0.3.0",
     "frep": "^0.2.1"
   }
 }

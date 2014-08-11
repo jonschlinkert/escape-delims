@@ -37,8 +37,7 @@ function delimiters (options) {
 
 delimiters.init = function(opts) {
 	opts = opts || {};
-  opts.delims = opts.delims || ['{%%', '%}'];
-  this.delims = opts.delims;
+  this.delims = opts.delims || ['{%%', '%}'];
   this.regex = delims.templates(this.delims).evaluate;
 };
 

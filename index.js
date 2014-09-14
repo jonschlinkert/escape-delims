@@ -1,6 +1,5 @@
 /**
  * escape-delims <https://github.com/assemble/escape-delims>
- * Generate markdown documentation for GitHub projects.
  *
  * Copyright (c) 2014 Jon Schlinkert, contributors.
  * Licensed under the MIT license.
@@ -8,65 +7,64 @@
 
 'use strict';
 
-var replace = require('frep');
 var Delims = require('delims');
 var delims = new Delims();
 
 
 /**
+ * Create a new instance of `EscapeDelims`:
+ *
  * ```js
- * var delims = require('escape-delims');
+ * var Delims = require('escape-delims');
+ * var delims = new Delims();
  * ```
  *
- * @method `delims`
- * @param {Object} `options` Default options to use.
+ * Optionally pass the "escape delimiters" to use as an array:
+ *
+ * ```js
+ * var delims = new Delims(['<%%', '%>']);
+ * ```
+ *
+ * @param {Object} `delims`
  * @api public
  */
 
-function delimiters (options) {
-  this.init(options);
-  return this;
+function EscapeDelims(delims) {
+  this.delims = delims || ['{%%', '%}'];
 }
 
 
 /**
- * Initialize defaults.
+ * Escape the given `str` with the specified escape-`delimiters`. Optionally
+ * pass the `delimiters` to use if they have not already been defined.
  *
- * @api private
+ * @param  {String} `str` The string with delimiters that need to be escaped.
+ * @param  {Array} `delimiters` The escape delimiters to use.
+ * @return {String}
  */
 
-delimiters.init = function(opts) {
-	opts = opts || {};
-  this.delims = opts.delims || ['{%%', '%}'];
-  this.regex = delims.templates(this.delims).evaluate;
+EscapeDelims.prototype.escape = function(str, delimiters) {
+  var re = delims.templates(delimiters || this.delims).evaluate;
+  return str.replace(re, '(;}%%{;)$1(;}%{;)');
 };
 
 
-delimiters.escape = function(str, options) {
-	this.init(options);
-	return replace.strWithArr(str, [
-    {
-      pattern: this.regex,
-      replacement: '(;}%%{;)$1(;}%{;)'
-    }
-  ]);
+/**
+ * Un-escape previously escaped delimiters in the given `str`. Optionally
+ * pass the `delimiters` to use if they have not already been defined.
+ *
+ * @param  {String} `str` The string with delimiters that need to be escaped.
+ * @param  {Array} `delimiters` The escape delimiters to use.
+ * @return {String}
+ */
+
+EscapeDelims.prototype.unescape = function(str, delimiters) {
+  var d = delimiters || this.delims;
+
+  return str
+    .replace(/\(;}%%{;\)/g, d[0])
+    .replace(/\(;}%{;\)/g, d[1]);
 };
 
 
-delimiters.unescape = function(str, options) {
-	this.init(options);
-
-  return replace.strWithArr(str, [
-    {
-      pattern: /\(;}%%{;\)/g,
-      replacement: this.delims[0]
-    },
-    {
-      pattern: /\(;}%{;\)/g,
-      replacement: this.delims[1]
-    }
-  ]);
-};
-
-
-module.exports = delimiters;
+module.exports = EscapeDelims;

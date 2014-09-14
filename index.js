@@ -25,7 +25,7 @@ var delims = new Delims();
  * var delims = new Delims(['<%%', '%>']);
  * ```
  *
- * @param {Object} `delims`
+ * @param {Object} `delims` Delimiters to use.
  * @api public
  */
 
@@ -36,11 +36,19 @@ function EscapeDelims(delims) {
 
 /**
  * Escape the given `str` with the specified escape-`delimiters`. Optionally
- * pass the `delimiters` to use if they have not already been defined.
+ * pass the `delimiters` syntax to escape if they have not already been defined.
+ *
+ * **Example:**
+ *
+ * ```js
+ * delims.escape('<%%= first %><%= last %>', ['<%%', '%>']);
+ * //=> '(;}%%{;) first (;}%{;)<%= last %>'
+ * ```
  *
  * @param  {String} `str` The string with delimiters that need to be escaped.
- * @param  {Array} `delimiters` The escape delimiters to use.
- * @return {String}
+ * @param  {Array} `delimiters` The delimiter syntax to escape.
+ * @return {String} String with escaped delimiters.
+ * @api public
  */
 
 EscapeDelims.prototype.escape = function(str, delimiters) {
@@ -53,9 +61,16 @@ EscapeDelims.prototype.escape = function(str, delimiters) {
  * Un-escape previously escaped delimiters in the given `str`. Optionally
  * pass the `delimiters` to use if they have not already been defined.
  *
+ * **Example:**
+ *
+ * ```js
+ * delims.unescape('(;}%%{;) first (;}%{;)<%= last %>', ['<%%', '%>']);
+ * //=> '<%%= first %><%= last %>'
+ * ```
  * @param  {String} `str` The string with delimiters that need to be escaped.
- * @param  {Array} `delimiters` The escape delimiters to use.
- * @return {String}
+ * @param  {Array} `delimiters` The delimiter syntax to un-escape, e.g. `['<%%', '%>']`
+ * @return {String} String with un-escaped delimiters.
+ * @api public
  */
 
 EscapeDelims.prototype.unescape = function(str, delimiters) {

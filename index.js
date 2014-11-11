@@ -15,22 +15,23 @@ var delims = new Delims();
  * Create a new instance of `EscapeDelims`:
  *
  * ```js
- * var Delims = require('escape-delims');
- * var delims = new Delims();
+ * var EscapeDelims = require('escape-delims');
+ * var escapeDelims = new EscapeDelims();
  * ```
  *
  * Optionally pass the "escape delimiters" to use as an array:
  *
  * ```js
- * var delims = new Delims(['<%%', '%>']);
+ * var escapeDelims = new EscapeDelims(['<%%', '%>']);
  * ```
  *
  * @param {Object} `delims` Delimiters to use.
  * @api public
  */
 
-function EscapeDelims(syntax) {
-  this.delims = syntax || ['{%%', '%}'];
+function EscapeDelims(from, to) {
+  this.from = from || ['{%%', '%}'];
+  this.to = to || this.from;
 }
 
 /**
@@ -40,7 +41,7 @@ function EscapeDelims(syntax) {
  * **Example:**
  *
  * ```js
- * delims.escape('<%%= first %><%= last %>', ['<%%', '%>']);
+ * escapeDelims.escape('<%%= first %><%= last %>', ['<%%', '%>']);
  * //=> '(;^__^;) first (;\^_\^;)<%= last %>'
  * ```
  *
@@ -50,8 +51,8 @@ function EscapeDelims(syntax) {
  * @api public
  */
 
-EscapeDelims.prototype.escape = function(str, syntax) {
-  var re = delims.templates(syntax || this.delims).evaluate;
+EscapeDelims.prototype.escape = function(str, from) {
+  var re = delims.templates(from || this.from).evaluate;
   return str.replace(re, '(;^__^;)$1(;^_^;)');
 };
 
@@ -62,7 +63,7 @@ EscapeDelims.prototype.escape = function(str, syntax) {
  * **Example:**
  *
  * ```js
- * delims.unescape('(;^__^;) first (;\^_\^;)<%= last %>', ['<%%', '%>']);
+ * escapeDelims.unescape('(;^__^;) first (;\^_\^;)<%= last %>', ['<%%', '%>']);
  * //=> '<%%= first %><%= last %>'
  * ```
  * @param  {String} `str` The string with delimiters that need to be escaped.
@@ -71,8 +72,8 @@ EscapeDelims.prototype.escape = function(str, syntax) {
  * @api public
  */
 
-EscapeDelims.prototype.unescape = function(str, syntax) {
-  var d = syntax || this.delims;
+EscapeDelims.prototype.unescape = function(str, to) {
+  var d = to || this.to;
   return str
     .replace(/\(;\^__\^;\)/g, d[0])
     .replace(/\(;\^_\^;\)/g, d[1]);

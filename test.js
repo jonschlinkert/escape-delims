@@ -8,12 +8,12 @@
 'use strict';
 
 var should = require('should');
-var Delims = require('./');
+var EscapeDelims = require('./');
 var delims;
 
 describe('escape delims', function () {
   beforeEach(function () {
-    delims = new Delims();
+    delims = new EscapeDelims();
   });
 
   describe('default delims', function () {
@@ -27,7 +27,7 @@ describe('escape delims', function () {
       actual.should.eql('(;^__^;)= foo (;^_^;)');
     });
 
-    it('should transform delimiters that have been escaped:', function () {
+    it('should revert delimiters that have been escaped:', function () {
       var actual = delims.unescape('(;^__^;)= foo (;^_^;)');
       actual.should.eql('{%%= foo %}');
     });
@@ -35,21 +35,33 @@ describe('escape delims', function () {
 
   describe('when "default" delimiters are defined on the contructor:', function () {
     it('should not transform default delimiters that have not been escaped:', function () {
-      delims = new Delims(['<%%', '%>']);
+      delims = new EscapeDelims(['<%%', '%>']);
       var actual = delims.escape('<%= foo %>');
       actual.should.eql('<%= foo %>');
     });
 
     it('should transform delimiters that have been escaped:', function () {
-      delims = new Delims(['<%%', '%>']);
+      delims = new EscapeDelims(['<%%', '%>']);
       var actual = delims.escape('<%%= foo %>');
       actual.should.eql('(;^__^;)= foo (;^_^;)');
     });
 
-    it('should un-escape delimiters:', function () {
-      delims = new Delims(['<%%', '%>']);
+    it('should un-escape delimiters using the `from` syntax:', function () {
+      delims = new EscapeDelims(['<%%', '%>']);
       var actual = delims.unescape('(;^__^;)= foo (;^_^;)');
       actual.should.eql('<%%= foo %>');
+    });
+
+    it('should un-escape delimiters using the `to` syntax:', function () {
+      delims = new EscapeDelims(['<%%', '%>'], ['<%', '%>']);
+      var actual = delims.unescape('(;^__^;)= foo (;^_^;)');
+      actual.should.eql('<%= foo %>');
+    });
+
+    it('should escape and un-escape delimiters:', function () {
+      delims = new EscapeDelims(['<%%', '%>'], ['<%', '%>']);
+      var actual = delims.escape('<%%= foo %>');
+      delims.unescape(actual).should.eql('<%= foo %>');
     });
   });
 
@@ -60,8 +72,8 @@ describe('escape delims', function () {
     });
 
     it('should un-escape escaped custom delimiters', function () {
-      var actual = delims.unescape('(;^__^;)= foo (;^_^;)', ['<%%', '%>']);
-      actual.should.eql('<%%= foo %>');
+      var actual = delims.unescape('(;^__^;)= foo (;^_^;)', ['<%', '%>']);
+      actual.should.eql('<%= foo %>');
     });
   });
 
@@ -79,7 +91,7 @@ describe('escape delims', function () {
 
   describe('transform handlebars style delims', function () {
     it('should not transform delimiters with whitespace', function () {
-      delims = new Delims(['{{', '}}']);
+      delims = new EscapeDelims(['{{', '}}']);
       var actual = delims.escape('{{ abcde }}', ['{{', '}}']);
       actual.should.eql('(;^__^;) abcde (;^_^;)');
       delims.unescape(actual).should.eql('{{ abcde }}');
@@ -137,6 +149,14 @@ describe('escape delims', function () {
     it('should un-escape escaped handlebars delimiters in expressions with multiple arguments:', function () {
       var actual = delims.unescape('(;^__^;) abcde (foo "bar") baz(;^_^;)', ['{{', '}}']);
       actual.should.eql('{{ abcde (foo "bar") baz}}');
+    });
+  });
+
+  describe('convert delims', function () {
+    it('should convert delimiters', function () {
+      delims = new EscapeDelims(['<%=', '%>'], ['{{', '}}']);
+      var actual = delims.escape('<%= foo %><%= bar %>');
+      delims.unescape(actual).should.eql('{{ foo }}{{ bar }}');
     });
   });
 });

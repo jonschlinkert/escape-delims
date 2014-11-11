@@ -29,56 +29,53 @@ var delims = new Delims();
  * @api public
  */
 
-function EscapeDelims(delims) {
-  this.delims = delims || ['{%%', '%}'];
+function EscapeDelims(syntax) {
+  this.delims = syntax || ['{%%', '%}'];
 }
 
-
 /**
- * Escape the given `str` with the specified escape-`delimiters`. Optionally
- * pass the `delimiters` syntax to escape if they have not already been defined.
+ * Escape the given `str`, optionally passing a delimiter `syntax`
+ * to use if not defined in the constructor.
  *
  * **Example:**
  *
  * ```js
  * delims.escape('<%%= first %><%= last %>', ['<%%', '%>']);
- * //=> '(;}%%{;) first (;}%{;)<%= last %>'
+ * //=> '(;^__^;) first (;\^_\^;)<%= last %>'
  * ```
  *
  * @param  {String} `str` The string with delimiters that need to be escaped.
- * @param  {Array} `delimiters` The delimiter syntax to escape.
+ * @param  {Array} `syntax` The delimiter syntax to escape.
  * @return {String} String with escaped delimiters.
  * @api public
  */
 
-EscapeDelims.prototype.escape = function(str, delimiters) {
-  var re = delims.templates(delimiters || this.delims).evaluate;
-  return str.replace(re, '(;}%%{;)$1(;}%{;)');
+EscapeDelims.prototype.escape = function(str, syntax) {
+  var re = delims.templates(syntax || this.delims).evaluate;
+  return str.replace(re, '(;^__^;)$1(;^_^;)');
 };
-
 
 /**
  * Un-escape previously escaped delimiters in the given `str`. Optionally
- * pass the `delimiters` to use if they have not already been defined.
+ * pass the `syntax` to use if they have not already been defined.
  *
  * **Example:**
  *
  * ```js
- * delims.unescape('(;}%%{;) first (;}%{;)<%= last %>', ['<%%', '%>']);
+ * delims.unescape('(;^__^;) first (;\^_\^;)<%= last %>', ['<%%', '%>']);
  * //=> '<%%= first %><%= last %>'
  * ```
  * @param  {String} `str` The string with delimiters that need to be escaped.
- * @param  {Array} `delimiters` The delimiter syntax to un-escape, e.g. `['<%%', '%>']`
+ * @param  {Array} `syntax` The delimiter syntax to un-escape, e.g. `['<%%', '%>']`
  * @return {String} String with un-escaped delimiters.
  * @api public
  */
 
-EscapeDelims.prototype.unescape = function(str, delimiters) {
-  var d = delimiters || this.delims;
-
+EscapeDelims.prototype.unescape = function(str, syntax) {
+  var d = syntax || this.delims;
   return str
-    .replace(/\(;}%%{;\)/g, d[0])
-    .replace(/\(;}%{;\)/g, d[1]);
+    .replace(/\(;\^__\^;\)/g, d[0])
+    .replace(/\(;\^_\^;\)/g, d[1]);
 };
 
 

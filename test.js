@@ -24,11 +24,11 @@ describe('escape delims', function () {
 
     it('should transform delimiters that have been escaped:', function () {
       var actual = delims.escape('{%%= foo %}');
-      actual.should.eql('(;}%%{;)= foo (;}%{;)');
+      actual.should.eql('(;^__^;)= foo (;^_^;)');
     });
 
     it('should transform delimiters that have been escaped:', function () {
-      var actual = delims.unescape('(;}%%{;)= foo (;}%{;)');
+      var actual = delims.unescape('(;^__^;)= foo (;^_^;)');
       actual.should.eql('{%%= foo %}');
     });
   });
@@ -43,12 +43,12 @@ describe('escape delims', function () {
     it('should transform delimiters that have been escaped:', function () {
       delims = new Delims(['<%%', '%>']);
       var actual = delims.escape('<%%= foo %>');
-      actual.should.eql('(;}%%{;)= foo (;}%{;)');
+      actual.should.eql('(;^__^;)= foo (;^_^;)');
     });
 
     it('should un-escape delimiters:', function () {
       delims = new Delims(['<%%', '%>']);
-      var actual = delims.unescape('(;}%%{;)= foo (;}%{;)');
+      var actual = delims.unescape('(;^__^;)= foo (;^_^;)');
       actual.should.eql('<%%= foo %>');
     });
   });
@@ -56,77 +56,86 @@ describe('escape delims', function () {
   describe('lo-dash style delims', function () {
     it('should escape custom delimiters', function () {
       var actual = delims.escape('<%%= foo %>', ['<%%', '%>']);
-      actual.should.eql('(;}%%{;)= foo (;}%{;)');
+      actual.should.eql('(;^__^;)= foo (;^_^;)');
     });
 
     it('should un-escape escaped custom delimiters', function () {
-      var actual = delims.unescape('(;}%%{;)= foo (;}%{;)', ['<%%', '%>']);
+      var actual = delims.unescape('(;^__^;)= foo (;^_^;)', ['<%%', '%>']);
       actual.should.eql('<%%= foo %>');
     });
   });
 
   describe('un-escape lodash style delims', function () {
     it('should un-escape escaped custom delimiters', function () {
-      var actual = delims.unescape('(;}%%{;) abcde (;}%{;)', ['<%=', '%>']);
+      var actual = delims.unescape('(;^__^;) abcde (;^_^;)', ['<%=', '%>']);
       actual.should.eql('<%= abcde %>');
     });
 
     it('should un-escape escaped lodash delimiters in expressions with multiple arguments:', function () {
-      var actual = delims.unescape('(;}%%{;) abcde(foo, bar) baz(;}%{;)', ['<%=', '%>']);
+      var actual = delims.unescape('(;^__^;) abcde(foo, bar) baz(;^_^;)', ['<%=', '%>']);
       actual.should.eql('<%= abcde(foo, bar) baz%>');
     });
   });
 
   describe('transform handlebars style delims', function () {
     it('should not transform delimiters with whitespace', function () {
+      delims = new Delims(['{{', '}}']);
       var actual = delims.escape('{{ abcde }}', ['{{', '}}']);
-      actual.should.eql('(;}%%{;) abcde (;}%{;)');
+      actual.should.eql('(;^__^;) abcde (;^_^;)');
+      delims.unescape(actual).should.eql('{{ abcde }}');
     });
 
     it('should transform delimiters without whitespace', function () {
       var actual = delims.escape('{{abcde}}', ['{{', '}}']);
-      actual.should.eql('(;}%%{;)abcde(;}%{;)');
+      actual.should.eql('(;^__^;)abcde(;^_^;)');
+      delims.unescape(actual, ['{{', '}}']).should.eql('{{abcde}}');
     });
 
     it('should transform delimiters with imbalanced whitespace', function () {
       var actual = delims.escape('{{ abcde}}', ['{{', '}}']);
-      actual.should.eql('(;}%%{;) abcde(;}%{;)');
+      actual.should.eql('(;^__^;) abcde(;^_^;)');
+      delims.unescape(actual, ['{{', '}}']).should.eql('{{ abcde}}');
     });
 
     it('should transform delimiters in expressions with multiple arguments:', function () {
       var actual = delims.escape('{{ abcde (foo "bar") baz}}', ['{{', '}}']);
-      actual.should.eql('(;}%%{;) abcde (foo "bar") baz(;}%{;)');
+      actual.should.eql('(;^__^;) abcde (foo "bar") baz(;^_^;)');
+      delims.unescape(actual, ['{{', '}}']).should.eql('{{ abcde (foo "bar") baz}}');
     });
 
     it('should transform delimiters with whitespace', function () {
       var actual = delims.escape('{{% abcde }}{{ fghijk }}', ['{{%', '}}']);
-      actual.should.eql('(;}%%{;) abcde (;}%{;){{ fghijk }}');
+      actual.should.eql('(;^__^;) abcde (;^_^;){{ fghijk }}');
+      delims.unescape(actual, ['{{%', '}}']).should.eql('{{% abcde }}{{ fghijk }}');
     });
 
     it('should transform delimiters without whitespace', function () {
       var actual = delims.escape('{{%abcde}}{{ fghijk }}', ['{{%', '}}']);
-      actual.should.eql('(;}%%{;)abcde(;}%{;){{ fghijk }}');
+      actual.should.eql('(;^__^;)abcde(;^_^;){{ fghijk }}');
+      delims.unescape(actual, ['{{%', '}}']).should.eql('{{%abcde}}{{ fghijk }}');
     });
 
     it('should transform delimiters with imbalanced whitespace', function () {
       var actual = delims.escape('{{% abcde}}{{ fghijk }}', ['{{%', '}}']);
-      actual.should.eql('(;}%%{;) abcde(;}%{;){{ fghijk }}');
+      actual.should.eql('(;^__^;) abcde(;^_^;){{ fghijk }}');
+      delims.unescape(actual, ['{{%', '}}']).should.eql('{{% abcde}}{{ fghijk }}');
     });
 
     it('should transform delimiters in expressions with multiple arguments:', function () {
       var actual = delims.escape('{{% abcde (foo "bar") baz}}{{ fghijk }}', ['{{%', '}}']);
-      actual.should.eql('(;}%%{;) abcde (foo "bar") baz(;}%{;){{ fghijk }}');
+      actual.should.eql('(;^__^;) abcde (foo "bar") baz(;^_^;){{ fghijk }}');
+      delims.unescape(actual, ['{{%', '}}']).should.eql('{{% abcde (foo "bar") baz}}{{ fghijk }}');
     });
   });
 
   describe('un-escape handlebars style delims', function () {
     it('should un-escape escaped custom delimiters', function () {
-      var actual = delims.unescape('(;}%%{;) abcde (;}%{;)', ['{{', '}}']);
+      var actual = delims.unescape('(;^__^;) abcde (;^_^;)', ['{{', '}}']);
       actual.should.eql('{{ abcde }}');
     });
 
     it('should un-escape escaped handlebars delimiters in expressions with multiple arguments:', function () {
-      var actual = delims.unescape('(;}%%{;) abcde (foo "bar") baz(;}%{;)', ['{{', '}}']);
+      var actual = delims.unescape('(;^__^;) abcde (foo "bar") baz(;^_^;)', ['{{', '}}']);
       actual.should.eql('{{ abcde (foo "bar") baz}}');
     });
   });

@@ -108,6 +108,7 @@
     "should": "^4.0.4"
   },
   "dependencies": {
-    "delims": "^0.4.0"
+    "delims": "^0.4.0",
+    "regexp-special-chars": "^0.1.0"
   }
 }

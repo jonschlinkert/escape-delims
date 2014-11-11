@@ -7,12 +7,13 @@
 
 'use strict';
 
+var escapeRe = require('regexp-special-chars');
 var Delims = require('delims');
 var delims = new Delims();
 
 
 /**
- * Create a new instance of `EscapeDelims`:
+ * Create a new instance of `EscapeDelims()`:
  *
  * ```js
  * var EscapeDelims = require('escape-delims');
@@ -25,13 +26,18 @@ var delims = new Delims();
  * var escapeDelims = new EscapeDelims(['<%%', '%>']);
  * ```
  *
- * @param {Object} `delims` Delimiters to use.
+ * @param {Array} `from` Optionally pass delimiters to use for escaping. Defaults to `['{%%', '%}']`.
+ * @param {Array} `to` Optionally pass delimiters to use for un-escaping. Defaults to `['{%%', '%}']`.
  * @api public
  */
 
 function EscapeDelims(from, to) {
   this.from = from || ['{%%', '%}'];
   this.to = to || this.from;
+
+  // private properties but can be changed if necessary
+  this.a = '(;^__^;)';
+  this.b = '(;^_^;)';
 }
 
 /**
@@ -45,15 +51,14 @@ function EscapeDelims(from, to) {
  * //=> '(;^__^;) first (;\^_\^;)<%= last %>'
  * ```
  *
- * @param  {String} `str` The string with delimiters that need to be escaped.
- * @param  {Array} `syntax` The delimiter syntax to escape.
- * @return {String} String with escaped delimiters.
+ * @param  {String} `str` The string with delimiters to escape.
+ * @param  {Array} `from` The delimiter syntax to use.
  * @api public
  */
 
 EscapeDelims.prototype.escape = function(str, from) {
   var re = delims.templates(from || this.from).evaluate;
-  return str.replace(re, '(;^__^;)$1(;^_^;)');
+  return str.replace(re, this.a + '$1' + this.b);
 };
 
 /**
@@ -64,20 +69,25 @@ EscapeDelims.prototype.escape = function(str, from) {
  *
  * ```js
  * escapeDelims.unescape('(;^__^;) first (;\^_\^;)<%= last %>', ['<%%', '%>']);
- * //=> '<%%= first %><%= last %>'
+ * //=> '<%= first %><%= last %>'
  * ```
+ *
  * @param  {String} `str` The string with delimiters that need to be escaped.
- * @param  {Array} `syntax` The delimiter syntax to un-escape, e.g. `['<%%', '%>']`
- * @return {String} String with un-escaped delimiters.
+ * @param  {Array} `to` The delimiter syntax to use for un-escaping.
  * @api public
  */
 
 EscapeDelims.prototype.unescape = function(str, to) {
   var d = to || this.to;
   return str
-    .replace(/\(;\^__\^;\)/g, d[0])
-    .replace(/\(;\^_\^;\)/g, d[1]);
+    .replace(makeRe(this.a), d[0])
+    .replace(makeRe(this.b), d[1]);
 };
 
+
+function makeRe(str) {
+  str = str.replace(escapeRe, '\\$&');
+  return new RegExp(str, 'g');
+}
 
 module.exports = EscapeDelims;

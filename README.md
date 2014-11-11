@@ -2,8 +2,6 @@
 
 > Escape and un-escape delimiters in templates. Tested with Lo-Dash, underscore and Handlebars syntax, but could be used with other template engines/syntaxes as well. This is similar to the process used by Yeoman on escaped templates in generators.
 
-Originally from [grunt-readme](https://github.com/assemble/grunt-readme) and [verb](https://github.com/assemble/verb), the escape syntax has been changed to mirror Yeoman's escape syntax for familiarity to users.
-
 ## Install
 ### Install with [npm](npmjs.org)
 
@@ -11,69 +9,58 @@ Originally from [grunt-readme](https://github.com/assemble/grunt-readme) and [ve
 npm i escape-delims --save
 ```
 
-## Run tests
+## Usage
 
-```bash
-npm test
+```js
+var EscapeDelims = require('escape-delims');
 ```
 
 ## API
+## [EscapeDelims](index.js#L34)
 
-Create a new instance of `EscapeDelims`:
+Create a new instance of `EscapeDelims()`:
+
+* `from` **{Array}**: Optionally pass delimiters to use for escaping. Defaults to `['{%%', '%}']`.    
+* `to` **{Array}**: Optionally pass delimiters to use for un-escaping. Defaults to `['{%%', '%}']`.    
 
 ```js
-var Delims = require('escape-delims');
-var delims = new Delims();
+var EscapeDelims = require('escape-delims');
+var escapeDelims = new EscapeDelims();
 ```
 
 Optionally pass the "escape delimiters" to use as an array:
 
 ```js
-var delims = new Delims(['<%%', '%>']);
+var escapeDelims = new EscapeDelims(['<%%', '%>']);
 ```
 
-**Params:**
+## [.escape](index.js#L59)
 
-* `delims` **{Object}**: Delimiters to use.
+Escape the given `str`, optionally passing a delimiter `syntax` to use if not defined in the constructor.
 
-
-### .escape
-
-Escape the given `str` with the specified escape-`delimiters`. Optionally
-pass the `delimiters` syntax to escape if they have not already been defined.
+* `str` **{String}**: The string with delimiters to escape.    
+* `from` **{Array}**: The delimiter syntax to use.    
 
 **Example:**
 
 ```js
-delims.escape('<%%= first %><%= last %>', ['<%%', '%>']);
-//=> '{% first %}<%= last %>'
+escapeDelims.escape('<%%= first %><%= last %>', ['<%%', '%>']);
+//=> '(;^__^;) first (;\^_\^;)<%= last %>'
 ```
 
-**Params:**
+## [.unescape](index.js#L80)
 
-* `str` **{String}**: The string with delimiters that need to be escaped.
-* `delimiters` **{Array}**: The delimiter syntax to escape.
-* `return` **{String}** String with escaped delimiters.
+Un-escape previously escaped delimiters in the given `str`. Optionally pass the `syntax` to use if they have not already been defined.
 
-
-### .unescape
-
-Un-escape previously escaped delimiters in the given `str`. Optionally
-pass the `delimiters` to use if they have not already been defined.
+* `str` **{String}**: The string with delimiters that need to be escaped.    
+* `to` **{Array}**: The delimiter syntax to use for un-escaping.    
 
 **Example:**
 
 ```js
-delims.unescape('{% first %}<%= last %>', ['<%%', '%>']);
-//=> '<%%= first %><%= last %>'
+escapeDelims.unescape('(;^__^;) first (;\^_\^;)<%= last %>', ['<%%', '%>']);
+//=> '<%= first %><%= last %>'
 ```
-
-**Params:**
-
-* `str` **{String}**: The string with delimiters that need to be escaped.
-* `delimiters` **{Array}**: The delimiter syntax to un-escape, e.g. `['<%%', '%>']`
-* `return` **{String}** String with un-escaped delimiters.
-
 
 ## Author
 
